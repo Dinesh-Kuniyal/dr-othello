@@ -106,6 +106,63 @@ function updateBoard(row, column, playerNumber) {
   addFilterToBoard(updateBoard);
 }
 
+function bulkUpdate(row, column, noOfCoinsToChange, rowOperation, colOperation, playerNumber) {
+  if (noOfCoinsToChange === 0) {
+    return;
+  }
+
+  row = row + rowOperation;
+  column = column + colOperation;
+
+  updateBoard(row, column, playerNumber);
+  return bulkUpdate(row, column, noOfCoinsToChange - 1, rowOperation, colOperation, playerNumber);
+}
+
+function checkRow(row, column, playerNumber, noOfCoinsToChange, inForward, inRow) {
+
+  const xPos = inRow ? inForward ? column + 1 : column - 1 : column;
+  const yPos = !inRow ? inForward ? row + 1 : row - 1 : row;
+
+  if (xPos > 8 || yPos > 8 || xPos < 1 || yPos < 1) {
+    return 0;
+  }
+
+  const indexToCheck = calculateIndex(yPos, xPos);
+  const boardString = removeFilterFromBoard();
+  const currentCoin = boardString[indexToCheck];
+
+  if (currentCoin === '⬜') {
+    return 0;
+  }
+
+  if (currentCoin === getMark(playerNumber)) {
+    return noOfCoinsToChange;
+  }
+
+  return checkRow(yPos, xPos, playerNumber, noOfCoinsToChange + 1, inForward, inRow);
+}
+
+function startProcessing(row, column, playerNumber) {
+  updateBoard(row, column, playerNumber);
+  console.log('Player Number', playerNumber);
+
+  const coinsToChangeInRowF = checkRow(row, column, playerNumber, 0, true, true);
+  bulkUpdate(row, column, coinsToChangeInRowF, 0, 1, playerNumber);
+  const coinsToChangeInRowB = checkRow(row, column, playerNumber, 0, false, true);
+  bulkUpdate(row, column, coinsToChangeInRowB, 0, -1, playerNumber);
+
+  const coinsToChangeInColF = checkRow(row, column, playerNumber, 0, true, false);
+  bulkUpdate(row, column, coinsToChangeInColF, 1, 0, playerNumber);
+  const coinsToChangeInColB = checkRow(row, column, playerNumber, 0, false, false);
+  bulkUpdate(row, column, coinsToChangeInColB, -1, 0, playerNumber);
+
+  console.log('In forward row ', coinsToChangeInRowF);
+  console.log('In backward row ', coinsToChangeInRowB);
+
+  console.log('In forward col ', coinsToChangeInColF);
+  console.log('In backward col ', coinsToChangeInColB);
+}
+
 function getRow() {
   return +prompt("Give the number of row.");
 }
@@ -126,7 +183,7 @@ function isCoinNear(row, column) {
   const board = removeFilterFromBoard();
   const indexToCheck = calculateIndex(row, column);
 
-  return board[indexToCheck] === '⚪' ||  board[indexToCheck] === '⚫';
+  return board[indexToCheck] === '⚪' || board[indexToCheck] === '⚫';
 }
 
 function isPositionValid(row, column) {
@@ -172,7 +229,7 @@ function startOthello(playerNumber) {
     return startOthello(playerNumber);
   }
 
-  updateBoard(row, column, playerNumber);
+  startProcessing(row, column, playerNumber);
 
   // console.clear();
   return startOthello(playerNumber + 1);
