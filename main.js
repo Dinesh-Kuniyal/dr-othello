@@ -13,10 +13,10 @@ function getMark(playerNumber) {
 }
 
 function getMessage(playerNumber) {
-  const segment2 = "\n\nPlayer 1 select row and column.";
-  const segment3 = "\n\nPlayer 2 select row and column.";
+  const segment1 = "\n\nPlayer 1 select row and column.";
+  const segment2 = "\n\nPlayer 2 select row and column.";
 
-  return playerNumber === 0 ? segment2 : segment3;
+  return playerNumber === 0 ? segment1 : segment2;
 }
 
 function slice(text, start, end) {
@@ -45,7 +45,7 @@ function removeBoundaries(string) {
   return slice(string, 4, 11);
 }
 
-function removeFilterFromBoard() {
+function getBoard() {
   const filteredString1 = removeBoundaries(string1);
   const filteredString2 = removeBoundaries(string2);
   const filteredString3 = removeBoundaries(string3);
@@ -59,8 +59,48 @@ function removeFilterFromBoard() {
     filteredString5 + filteredString6 + filteredString7 + filteredString8;
 }
 
+function countFinalCoins(coin) {
+  const board = getBoard();
+
+  let count = 0;
+  
+  for (let index = 0; index < board.length; index++) {
+    if (board[index] === coin) {
+      count++;
+    }
+  }
+
+  return count;
+}
+
+function showResultMessage(message) {
+  console.log("================================");
+  console.log("========== " + message + " =======");
+  console.log("================================");  
+}
+
+function showResult() {
+  const whiteCoins = countFinalCoins("⚪");
+  const blackCoins = countFinalCoins("⚫");
+
+  showResultMessage('Black :- ' + blackCoins);
+  showResultMessage('White :- ' + whiteCoins);
+
+  if (whiteCoins === blackCoins) {
+    showResultMessage('Its a draw..');
+    return;
+  }
+
+  if (whiteCoins > blackCoins) {
+    showResultMessage('White is Victorious');
+    return;
+  }
+
+  showResultMessage('Black is Victorious')
+}
+
 function isAnySpaceEmptyInBoard() {
-  const board = removeFilterFromBoard();
+  const board = getBoard();
 
   for (let index = 0; index < board.length; index++) {
     if (board[index] === '⬜') {
@@ -68,6 +108,7 @@ function isAnySpaceEmptyInBoard() {
     }
   }
 
+  showResult();
   return false;
 }
 
@@ -82,14 +123,15 @@ function addFilterToBoard(string) {
   string8 = '8️⃣ ' + slice(string, 56, 63) + '8️⃣';
 }
 
-function replaceAtIndex(string, indexToChange, index, replacement) {
+function replaceAtIndex(string, targetIndex, index, replacement) {
   if (index > string.length - 1) {
     return "";
   }
 
-  const charToAdd = index === indexToChange ? replacement : string[index];
+  const charToAdd = index === targetIndex ? replacement : string[index];
+  index = index + 1;
 
-  return charToAdd + replaceAtIndex(string, indexToChange, index + 1, replacement);
+  return charToAdd + replaceAtIndex(string, targetIndex, index, replacement);
 }
 
 function calculateIndex(row, column) {
@@ -97,70 +139,86 @@ function calculateIndex(row, column) {
 }
 
 function updateBoard(row, column, playerNumber) {
-  const coinPosition = calculateIndex(row, column);
+  const coinIndex = calculateIndex(row, column);
   const coinToAdd = getMark(playerNumber);
 
-  const boardString = removeFilterFromBoard();
-  const updateBoard = replaceAtIndex(boardString, coinPosition, 0, coinToAdd);
+  const board = getBoard();
+  const updatedBoard = replaceAtIndex(board, coinIndex, 0, coinToAdd);
 
-  addFilterToBoard(updateBoard);
+  addFilterToBoard(updatedBoard);
 }
 
-function bulkUpdate(row, column, noOfCoinsToChange, rowOperation, colOperation, playerNumber) {
-  if (noOfCoinsToChange === 0) {
+function bulkUpdate(row, column, coinsCount, addToRow, addToCol, playerNumber) {
+  if (coinsCount === 0) {
     return;
   }
 
-  row = row + rowOperation;
-  column = column + colOperation;
+  row = row + addToRow;
+  column = column + addToCol;
 
   updateBoard(row, column, playerNumber);
-  return bulkUpdate(row, column, noOfCoinsToChange - 1, rowOperation, colOperation, playerNumber);
+
+  coinsCount = coinsCount - 1;
+
+  return bulkUpdate(row, column, coinsCount, addToRow, addToCol, playerNumber);
 }
 
-function checkRow(row, column, playerNumber, noOfCoinsToChange, inForward, inRow) {
+function getCurrentCoin(row, column) {
+  const indexToCheck = calculateIndex(row, column);
+  const board = getBoard();
 
-  const xPos = inRow ? inForward ? column + 1 : column - 1 : column;
-  const yPos = !inRow ? inForward ? row + 1 : row - 1 : row;
+  return board[indexToCheck];
+}
 
-  if (xPos > 8 || yPos > 8 || xPos < 1 || yPos < 1) {
+function countCoins(row, column, player, addToRow, addToCol, coinsCount) {
+  row = row + addToRow;
+  column = column + addToCol;
+
+  if (column > 8 || row > 8 || column < 1 || row < 1) {
     return 0;
   }
 
-  const indexToCheck = calculateIndex(yPos, xPos);
-  const boardString = removeFilterFromBoard();
-  const currentCoin = boardString[indexToCheck];
+  const currentCoin = getCurrentCoin(row, column);
 
   if (currentCoin === '⬜') {
     return 0;
   }
 
-  if (currentCoin === getMark(playerNumber)) {
-    return noOfCoinsToChange;
+  if (currentCoin === getMark(player)) {
+    return coinsCount;
   }
 
-  return checkRow(yPos, xPos, playerNumber, noOfCoinsToChange + 1, inForward, inRow);
+  coinsCount = coinsCount + 1;
+
+  return countCoins(row , column, player, addToRow, addToCol, coinsCount);
 }
 
 function startProcessing(row, column, playerNumber) {
   updateBoard(row, column, playerNumber);
-  console.log('Player Number', playerNumber);
 
-  const coinsToChangeInRowF = checkRow(row, column, playerNumber, 0, true, true);
-  bulkUpdate(row, column, coinsToChangeInRowF, 0, 1, playerNumber);
-  const coinsToChangeInRowB = checkRow(row, column, playerNumber, 0, false, true);
-  bulkUpdate(row, column, coinsToChangeInRowB, 0, -1, playerNumber);
+  const changeInRowF = countCoins(row, column, playerNumber, 0, 1, 0);
+  bulkUpdate(row, column, changeInRowF, 0, 1, playerNumber);
 
-  const coinsToChangeInColF = checkRow(row, column, playerNumber, 0, true, false);
-  bulkUpdate(row, column, coinsToChangeInColF, 1, 0, playerNumber);
-  const coinsToChangeInColB = checkRow(row, column, playerNumber, 0, false, false);
-  bulkUpdate(row, column, coinsToChangeInColB, -1, 0, playerNumber);
+  const changeInRowB = countCoins(row, column, playerNumber, 0, -1, 0);
+  bulkUpdate(row, column, changeInRowB, 0, -1, playerNumber);
 
-  console.log('In forward row ', coinsToChangeInRowF);
-  console.log('In backward row ', coinsToChangeInRowB);
+  const changeInColF = countCoins(row, column, playerNumber, 1, 0, 0);
+  bulkUpdate(row, column, changeInColF, 1, 0, playerNumber);
 
-  console.log('In forward col ', coinsToChangeInColF);
-  console.log('In backward col ', coinsToChangeInColB);
+  const changeInColB = countCoins(row, column, playerNumber, -1, 0, 0);
+  bulkUpdate(row, column, changeInColB, -1, 0, playerNumber);
+
+  const changeInNE = countCoins(row, column, playerNumber, -1, 1, 0);
+  bulkUpdate(row, column, changeInNE, -1, 1, playerNumber);
+
+  const changeInSE = countCoins(row, column, playerNumber, 1, 1, 0);
+  bulkUpdate(row, column, changeInSE, 1, 1, playerNumber);
+
+  const changeInNW = countCoins(row, column, playerNumber, -1, -1, 0);
+  bulkUpdate(row, column, changeInNW, -1, -1, playerNumber);
+
+  const changeInSW = countCoins(row, column, playerNumber, 1, -1, 0);
+  bulkUpdate(row, column, changeInSW, 1, -1, playerNumber);
 }
 
 function getRow() {
@@ -172,7 +230,7 @@ function getColumn() {
 }
 
 function isPositionEmpty(row, column) {
-  const board = removeFilterFromBoard();
+  const board = getBoard();
   const indexToCheck = calculateIndex(row, column);
   console.log("index", indexToCheck);
 
@@ -180,7 +238,7 @@ function isPositionEmpty(row, column) {
 }
 
 function isCoinNear(row, column) {
-  const board = removeFilterFromBoard();
+  const board = getBoard();
   const indexToCheck = calculateIndex(row, column);
 
   return board[indexToCheck] === '⚪' || board[indexToCheck] === '⚫';
@@ -212,11 +270,11 @@ function isRowColomnValid(row, column) {
 }
 
 function startOthello(playerNumber) {
-  if (!isAnySpaceEmptyInBoard()) {
-    return 0; // Count the coins - Announce the winner
-  }
-
   printBoard();
+
+  if (!isAnySpaceEmptyInBoard()) {
+    return 0;
+  }
 
   playerNumber = playerNumber % 2;
   console.log(getMessage(playerNumber));
@@ -225,13 +283,13 @@ function startOthello(playerNumber) {
   const column = getColumn();
 
   if (!isRowColomnValid(row, column)) {
-    // console.clear();
+    console.clear();
     return startOthello(playerNumber);
   }
 
   startProcessing(row, column, playerNumber);
 
-  // console.clear();
+  console.clear();
   return startOthello(playerNumber + 1);
 }
 
