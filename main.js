@@ -8,15 +8,18 @@ let string6 = '6️⃣ ⬜⬜⬜⬜⬜⬜⬜⬜6️⃣';
 let string7 = '7️⃣ ⬜⬜⬜⬜⬜⬜⬜⬜7️⃣';
 let string8 = '8️⃣ ⬜⬜⬜⬜⬜⬜⬜⬜8️⃣';
 
+let player1Name = "";
+let player2Name = "";
+
 function getMark(playerNumber) {
   return playerNumber === 0 ? "⚪" : "⚫";
 }
 
 function getMessage(playerNumber) {
-  const segment1 = "\n\nPlayer 1 select row and column.";
-  const segment2 = "\n\nPlayer 2 select row and column.";
+  const playerName = playerNumber === 0 ? player1Name : player2Name;
+  const message = '\n\nPlayer ' + playerName + ' select row and column.';
 
-  return playerNumber === 0 ? segment1 : segment2;
+  return message;
 }
 
 function slice(text, start, end) {
@@ -92,11 +95,11 @@ function showResult() {
   }
 
   if (whiteCoins > blackCoins) {
-    showResultMessage('White is Victorious');
+    showResultMessage('White is Victorious : ' + player1Name);
     return;
   }
 
-  showResultMessage('Black is Victorious')
+  showResultMessage('Black is Victorious : ' + player2Name);
 }
 
 function isAnySpaceEmptyInBoard() {
@@ -296,4 +299,17 @@ function startOthello(playerNumber) {
   return startOthello(playerNumber + 1);
 }
 
-startOthello(2);
+function askName(message, defaultValue) {
+  return prompt(message, defaultValue);
+}
+
+function initializeOthello() {
+  showResultMessage('Welcome to DR. Othello');
+
+  player1Name = askName('Enter first player name : ', 'John');
+  player2Name = askName('Enter second player name : ', 'Michel');
+
+  startOthello(0);
+}
+
+initializeOthello();
