@@ -63,7 +63,7 @@ function countFinalCoins(coin) {
   const board = getBoard();
 
   let count = 0;
-  
+
   for (let index = 0; index < board.length; index++) {
     if (board[index] === coin) {
       count++;
@@ -76,7 +76,7 @@ function countFinalCoins(coin) {
 function showResultMessage(message) {
   console.log("================================");
   console.log("========== " + message + " =======");
-  console.log("================================");  
+  console.log("================================");
 }
 
 function showResult() {
@@ -190,7 +190,7 @@ function countCoins(row, column, player, addToRow, addToCol, coinsCount) {
 
   coinsCount = coinsCount + 1;
 
-  return countCoins(row , column, player, addToRow, addToCol, coinsCount);
+  return countCoins(row, column, player, addToRow, addToCol, coinsCount);
 }
 
 function startProcessing(row, column, playerNumber) {
@@ -238,6 +238,9 @@ function isPositionEmpty(row, column) {
 }
 
 function isCoinNear(row, column) {
+  if (row > 8 || column > 8 || row <= 0 || column <= 0) {
+    return false;
+  }
   const board = getBoard();
   const indexToCheck = calculateIndex(row, column);
 
