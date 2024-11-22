@@ -58,8 +58,11 @@ function getBoard() {
   const filteredString7 = removeBoundaries(string7);
   const filteredString8 = removeBoundaries(string8);
 
-  return filteredString1 + filteredString2 + filteredString3 + filteredString4 +
-    filteredString5 + filteredString6 + filteredString7 + filteredString8;
+  const startingRows = filteredString1 + filteredString2 + filteredString3;
+  const middleRows = filteredString4 + filteredString5 + filteredString6;
+  const endingRows = filteredString7 + filteredString8;
+
+  return startingRows + middleRows + endingRows;
 }
 
 function countFinalCoins(coin) {
@@ -235,7 +238,6 @@ function getColumn() {
 function isPositionEmpty(row, column) {
   const board = getBoard();
   const indexToCheck = calculateIndex(row, column);
-  console.log("index", indexToCheck);
 
   return board[indexToCheck] === '⬜';
 }
