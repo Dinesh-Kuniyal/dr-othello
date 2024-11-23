@@ -1,12 +1,16 @@
-let string0 = '0️⃣ 1️⃣ 2️⃣ 3️⃣ 4️⃣ 5️⃣ 6️⃣ 7️⃣ 8️⃣ 0️⃣';
-let string1 = '1️⃣ ⬜⬜⬜⬜⬜⬜⬜⬜1️⃣';
-let string2 = '2️⃣ ⬜⬜⬜⬜⬜⬜⬜⬜2️⃣';
-let string3 = '3️⃣ ⬜⬜⬜⬜⬜⬜⬜⬜3️⃣';
-let string4 = '4️⃣ ⬜⬜⬜⚪⚫⬜⬜⬜4️⃣';
-let string5 = '5️⃣ ⬜⬜⬜⚫⚪⬜⬜⬜5️⃣';
-let string6 = '6️⃣ ⬜⬜⬜⬜⬜⬜⬜⬜6️⃣';
-let string7 = '7️⃣ ⬜⬜⬜⬜⬜⬜⬜⬜7️⃣';
-let string8 = '8️⃣ ⬜⬜⬜⬜⬜⬜⬜⬜8️⃣';
+const LINE_BREAK = '\n';
+const WHITE_COIN = '⚪';
+const BLACK_COIN = '⚫';
+
+let row_0 = '0️⃣ 1️⃣ 2️⃣ 3️⃣ 4️⃣ 5️⃣ 6️⃣ 7️⃣ 8️⃣ 0️⃣';
+let row_1 = '1️⃣ ⬜⬜⬜⬜⬜⬜⬜⬜1️⃣';
+let row_2 = '2️⃣ ⬜⬜⬜⬜⬜⬜⬜⬜2️⃣';
+let row_3 = '3️⃣ ⬜⬜⬜⬜⬜⬜⬜⬜3️⃣';
+let row_4 = '4️⃣ ⬜⬜⬜⚪⚫⬜⬜⬜4️⃣';
+let row_5 = '5️⃣ ⬜⬜⬜⚫⚪⬜⬜⬜5️⃣';
+let row_6 = '6️⃣ ⬜⬜⬜⬜⬜⬜⬜⬜6️⃣';
+let row_7 = '7️⃣ ⬜⬜⬜⬜⬜⬜⬜⬜7️⃣';
+let row_8 = '8️⃣ ⬜⬜⬜⬜⬜⬜⬜⬜8️⃣';
 
 let player1Name = "";
 let player2Name = "";
@@ -32,16 +36,16 @@ function slice(text, start, end) {
 
 function printBoard() {
   console.log('\n');
-  console.log(string0);
-  console.log(string1);
-  console.log(string2);
-  console.log(string3);
-  console.log(string4);
-  console.log(string5);
-  console.log(string6);
-  console.log(string7);
-  console.log(string8);
-  console.log(string0);
+  console.log(row_0);
+  console.log(row_1);
+  console.log(row_2);
+  console.log(row_3);
+  console.log(row_4);
+  console.log(row_5);
+  console.log(row_6);
+  console.log(row_7);
+  console.log(row_8);
+  console.log(row_0);
 }
 
 function removeBoundaries(string) {
@@ -49,18 +53,18 @@ function removeBoundaries(string) {
 }
 
 function getBoard() {
-  const filteredString1 = removeBoundaries(string1);
-  const filteredString2 = removeBoundaries(string2);
-  const filteredString3 = removeBoundaries(string3);
-  const filteredString4 = removeBoundaries(string4);
-  const filteredString5 = removeBoundaries(string5);
-  const filteredString6 = removeBoundaries(string6);
-  const filteredString7 = removeBoundaries(string7);
-  const filteredString8 = removeBoundaries(string8);
+  const filteredRow_1 = removeBoundaries(row_1);
+  const filteredRow_2 = removeBoundaries(row_2);
+  const filteredRow_3 = removeBoundaries(row_3);
+  const filteredRow_4 = removeBoundaries(row_4);
+  const filteredRow_5 = removeBoundaries(row_5);
+  const filteredRow_6 = removeBoundaries(row_6);
+  const filteredRow_7 = removeBoundaries(row_7);
+  const filteredRow_8 = removeBoundaries(row_8);
 
-  const startingRows = filteredString1 + filteredString2 + filteredString3;
-  const middleRows = filteredString4 + filteredString5 + filteredString6;
-  const endingRows = filteredString7 + filteredString8;
+  const startingRows = filteredRow_1 + filteredRow_2 + filteredRow_3;
+  const middleRows = filteredRow_4 + filteredRow_5 + filteredRow_6;
+  const endingRows = filteredRow_7 + filteredRow_8;
 
   return startingRows + middleRows + endingRows;
 }
@@ -79,30 +83,50 @@ function countFinalCoins(coin) {
   return count;
 }
 
-function showResultMessage(message) {
-  console.log("================================");
-  console.log("========== " + message + " =======");
-  console.log("================================");
+function repeat(string, times) {
+  if (times === 0) {
+    return "";
+  }
+
+  return string + repeat(string, times - 1);
+}
+
+function addTrailingString(text, string) {
+  return string + text + string;
+}
+
+function showMessage(message) {
+  const SPACES_COUNT = 2;
+  const borderItemsCount = message.length + SPACES_COUNT + 20;
+  
+  const tralingBorder = repeat('=', 10);
+  const border = repeat('=', borderItemsCount);
+
+  const messageBorder = addTrailingString(border, LINE_BREAK);
+  const messageWithSpace = addTrailingString(message, ' ');
+
+  const messageSection = tralingBorder + messageWithSpace + tralingBorder;
+  console.log(messageBorder + messageSection + messageBorder);
 }
 
 function showResult() {
-  const whiteCoins = countFinalCoins("⚪");
-  const blackCoins = countFinalCoins("⚫");
+  const whiteCoinsCount = countFinalCoins(WHITE_COIN);
+  const blackCoinsCount = countFinalCoins(BLACK_COIN);
 
-  showResultMessage('Black :- ' + blackCoins);
-  showResultMessage('White :- ' + whiteCoins);
+  showMessage('Black :- ' + blackCoinsCount);
+  showMessage('White :- ' + whiteCoinsCount);
 
-  if (whiteCoins === blackCoins) {
-    showResultMessage('Its a draw..');
+  if (whiteCoinsCount === blackCoinsCount) {
+    showMessage('Its a draw..');
     return;
   }
 
-  if (whiteCoins > blackCoins) {
-    showResultMessage('White is Victorious : ' + player1Name);
+  if (whiteCoinsCount > blackCoinsCount) {
+    showMessage('White is Victorious : ' + player1Name);
     return;
   }
 
-  showResultMessage('Black is Victorious : ' + player2Name);
+  showMessage('Black is Victorious : ' + player2Name);
 }
 
 function isAnySpaceEmptyInBoard() {
@@ -119,14 +143,14 @@ function isAnySpaceEmptyInBoard() {
 }
 
 function addFilterToBoard(string) {
-  string1 = '1️⃣ ' + slice(string, 0, 7) + '1️⃣';
-  string2 = '2️⃣ ' + slice(string, 8, 15) + '2️⃣';
-  string3 = '3️⃣ ' + slice(string, 16, 23) + '3️⃣';
-  string4 = '4️⃣ ' + slice(string, 24, 31) + '4️⃣';
-  string5 = '5️⃣ ' + slice(string, 32, 39) + '5️⃣';
-  string6 = '6️⃣ ' + slice(string, 40, 47) + '6️⃣';
-  string7 = '7️⃣ ' + slice(string, 48, 55) + '7️⃣';
-  string8 = '8️⃣ ' + slice(string, 56, 63) + '8️⃣';
+  row_1 = '1️⃣ ' + slice(string, 0, 7) + '1️⃣';
+  row_2 = '2️⃣ ' + slice(string, 8, 15) + '2️⃣';
+  row_3 = '3️⃣ ' + slice(string, 16, 23) + '3️⃣';
+  row_4 = '4️⃣ ' + slice(string, 24, 31) + '4️⃣';
+  row_5 = '5️⃣ ' + slice(string, 32, 39) + '5️⃣';
+  row_6 = '6️⃣ ' + slice(string, 40, 47) + '6️⃣';
+  row_7 = '7️⃣ ' + slice(string, 48, 55) + '7️⃣';
+  row_8 = '8️⃣ ' + slice(string, 56, 63) + '8️⃣';
 }
 
 function replaceAtIndex(string, targetIndex, index, replacement) {
@@ -166,7 +190,7 @@ function bulkUpdate(row, column, coinsCount, addToRow, addToCol, playerNumber) {
 
   coinsCount = coinsCount - 1;
 
-  return bulkUpdate(row, column, coinsCount, addToRow, addToCol, playerNumber);
+  bulkUpdate(row, column, coinsCount, addToRow, addToCol, playerNumber);
 }
 
 function getCurrentCoin(row, column) {
@@ -176,15 +200,19 @@ function getCurrentCoin(row, column) {
   return board[indexToCheck];
 }
 
-function countCoins(row, column, player, addToRow, addToCol, coinsCount) {
-  row = row + addToRow;
-  column = column + addToCol;
+function isCellOutOfBound(row, column) {
+  return column > 8 || row > 8 || column < 1 || row < 1;
+}
 
-  if (column > 8 || row > 8 || column < 1 || row < 1) {
+function countCoins(row, column, player, addToRow, addToCol, coinsCount) {
+  let newRow = row + addToRow;
+  let newColumn = column + addToCol;
+
+  if (isCellOutOfBound(newRow, newColumn)) {
     return 0;
   }
 
-  const currentCoin = getCurrentCoin(row, column);
+  const currentCoin = getCurrentCoin(newRow, newColumn);
 
   if (currentCoin === '⬜') {
     return 0;
@@ -194,9 +222,9 @@ function countCoins(row, column, player, addToRow, addToCol, coinsCount) {
     return coinsCount;
   }
 
-  coinsCount = coinsCount + 1;
+  let newCount = coinsCount + 1;
 
-  return countCoins(row, column, player, addToRow, addToCol, coinsCount);
+  return countCoins(newRow, newColumn, player, addToRow, addToCol, newCount);
 }
 
 function startProcessing(row, column, playerNumber) {
@@ -243,13 +271,14 @@ function isPositionEmpty(row, column) {
 }
 
 function isCoinNear(row, column) {
-  if (row > 8 || column > 8 || row <= 0 || column <= 0) {
+  if (isCellOutOfBound(row, column)) {
     return false;
   }
+
   const board = getBoard();
   const indexToCheck = calculateIndex(row, column);
 
-  return board[indexToCheck] === '⚪' || board[indexToCheck] === '⚫';
+  return board[indexToCheck] === WHITE_COIN || board[indexToCheck] === BLACK_COIN;
 }
 
 function isPositionValid(row, column) {
@@ -270,7 +299,7 @@ function isPositionValid(row, column) {
 }
 
 function isRowColomnValid(row, column) {
-  if (row > 8 || column > 8 || row < 1 || column < 1) {
+  if (isCellOutOfBound(row, column)) {
     return false;
   }
 
@@ -306,7 +335,7 @@ function askName(message, defaultValue) {
 }
 
 function initializeOthello() {
-  showResultMessage('Welcome to DR. Othello');
+  showMessage('Welcome to DR. Othello');
 
   player1Name = askName('Enter first player name : ', 'John');
   player2Name = askName('Enter second player name : ', 'Michel');
